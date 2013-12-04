@@ -1,0 +1,83 @@
+// Copyright 2013, odanielson@github.com
+// MIT-license
+
+body
+{
+    background-color:black;
+}
+
+.label {
+    fill: white;
+}
+
+#graph {
+    position: absolute;
+    left: 5px;
+    top: 5px;
+    width: 640px;
+    height: 100%;
+}
+
+#infobox {
+    position: absolute;
+    left: 660px;
+    top: 5px;
+    width: 100%;
+    height: 100%;
+    fill: white;
+}
+
+.infoheader {
+    color: white;
+}
+
+circle {
+  fill: #202020;
+  fill-opacity: .25;
+  stroke: rgb(31, 31, 31);
+  stroke-width: 1px;
+}
+
+.leaf circle {
+  fill: #ff7f0e;
+  fill-opacity: 1;
+}
+
+circle.error {
+    fill: red;
+    fill-opacity: 0.5;
+    stroke-width: 0px;
+}
+circle.warning {
+    fill: yellow;
+    fill-opacity: 0.5;
+    stroke-width: 0px;
+}
+circle.info {
+    fill: white;
+    fill-opacity: 0.5;
+    stroke-width: 0px;
+}
+circle.host {
+    fill: grey;
+}
+circle.label {
+    stroke-width: 0px;
+    fill-opacity: 0;
+}
+circle.service {
+    fill: #a080aa;
+    stroke: white;
+    stroke-width: 2px;
+}
+
+path.link {
+    stroke: #88ccdd;
+    stroke-width: 3px;
+    stroke-opacity: 0.5;
+}
+
+text {
+  font: 10px sans-serif;
+  fill: white;
+}
