@@ -2,7 +2,6 @@
 // MIT-license
 
 Graph = function(container, width, height, infobox) {
-    this.container = container;
     this.infobox = infobox;
     this.height = height;
     this.width = width;
@@ -17,13 +16,14 @@ Graph = function(container, width, height, infobox) {
 
 }
 
-Graph.prototype.select_node = function(node) {
-
-    data = {'title': node.type,
-            'infolist': node.infolist }
-    var html_info = new EJS({url: '/static/application/infobox.ejs'}).render(data)
-    $("#header").html(html_info);
-
+Graph.prototype.selectNode = function(node) {
+    console.log(node);
+    data = ""
+    for (var key in node) {
+        data += key + ": " + node[key] + "<br/n>";
+    }
+    $(this.infobox).attr("class", "nodeinfo");
+    $(this.infobox).html(data);
 }
 
 Graph.prototype.update = function(dataset) {
@@ -41,16 +41,18 @@ Graph.prototype.update = function(dataset) {
     var g_enter = nodes.enter().append("g")
         .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
 
+    var me = this;
     g_enter
         .append("circle")
         .attr("class", function(d) { return d.classname; })
         .attr("r", function(d) { return d.r; })
+        .on("click", function(d, i) { me.selectNode(d); })
 
     g_enter
         .append("text")
         .attr("dy", ".3em")
         .style("text-anchor", "middle")
-        .text(function(d) { return d.name; });
+        .text(function(d) { return ((d.children.length == 0) ? d.name : "") });
 
     nodes.transition()
         .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
