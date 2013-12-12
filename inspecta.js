@@ -13,17 +13,20 @@ Graph = function(container, width, height, infobox) {
         .append("g")
         .attr("transform", "translate(2,2)");
 
+    this.selectCallbacks = {};
 
+}
+
+Graph.prototype.registerSelectCallback = function(name, callback) {
+    this.selectCallbacks[name] = callback;
 }
 
 Graph.prototype.selectNode = function(node) {
     console.log(node);
-    data = ""
-    for (var key in node) {
-        data += key + ": " + node[key] + "<br/n>";
+    for (var key in this.selectCallbacks) {
+        console.log("Calling " + key);
+        this.selectCallbacks[key](node);
     }
-    $(this.infobox).attr("class", "nodeinfo");
-    $(this.infobox).html(data);
 }
 
 Graph.prototype.update = function(dataset) {
