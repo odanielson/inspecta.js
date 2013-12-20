@@ -22,15 +22,13 @@ Graph.prototype.registerSelectCallback = function(name, callback) {
 }
 
 Graph.prototype.selectNode = function(node) {
-    console.log(node);
     for (var key in this.selectCallbacks) {
-        console.log("Calling " + key);
         this.selectCallbacks[key](node);
     }
 }
 
 Graph.prototype.update = function(dataset) {
-    console.log(dataset);
+    console.log("new update")
     var pack = d3.layout.pack()
         .size([this.width - this.margin , this.height - this.margin])
         .value(function(d) { return d.size; })
@@ -65,23 +63,41 @@ Graph.prototype.update = function(dataset) {
 
     nodes.exit().remove("g");
 
-    console.log(dataset)
     var getPos = function(id) {
         return dataset.all_nodes[id].x + "," + dataset.all_nodes[id].y;
     }
+
+    var getPoint = function(id) {
+        return [dataset.all_nodes[id].x, dataset.all_nodes[id].y];
+    }
+
+    var computeControlPoint = function(link) {
+        var p1 = getPoint(link.src);
+        var p2 = getPoint(link.dst);
+        var v = Subtract(p2, p1);
+        var v_n = Normalize(v);
+        var orto = RotateLeft(v_n);
+        var r = Norm(v) * 0.2;
+        var c = Add(Add(p1, Multiply(v, 0.5)), Multiply(orto, r));
+        return c[0] + "," + c[1];
+    }
+
+    var createLink = function(link) {
+        return "M" + getPos(link.src) + "Q " + computeControlPoint(link) + " " + getPos(link.dst);
+    }
+
     // Do something with dataset.links to.
     var links = this.container.selectAll("path").data(dataset.links, function(d) { return d.id;})
-    console.log(links);
+
     links.enter()
         .append("path")
         .attr("class", "link")
-        .attr("d", function(d) { return "M" + getPos(d.src) + " L" + getPos(d.dst);})
+        .attr("d", function(d) { return createLink(d); });
 
     links.transition()
-        .attr("d", function(d) { return "M" + getPos(d.src) + " L" + getPos(d.dst);})
+        .attr("d", function(d) { return createLink(d); });
 
     links.exit().remove();
-    console.log(dataset.links)
 
 }
 
@@ -114,10 +130,8 @@ World = function() {
             delete this.nodes[parent].children_id[id];
         }
         for (var child in this.nodes[id].children_id) {
-            console.log("deleting " + child);
             delete this.nodes[child];
         }
-        console.log("deleting " + id);
         delete this.nodes[id];
     }
 

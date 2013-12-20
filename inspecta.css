@@ -75,6 +75,7 @@ path.link {
     stroke: #88ccdd;
     stroke-width: 2px;
     stroke-opacity: 0.5;
+    fill: none;
 }
 
 text {
