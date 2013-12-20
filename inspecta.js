@@ -1,3 +1,4 @@
+// https://github.com/odanielson/inspecta.js
 // Copyright 2013, odanielson@github.com
 // MIT-license
 
