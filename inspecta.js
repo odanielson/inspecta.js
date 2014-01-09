@@ -2,7 +2,8 @@
 // Copyright 2013, odanielson@github.com
 // MIT-license
 
-Graph = function(container, width, height, infobox) {
+Graph = function(model, container, width, height, infobox) {
+    this.model = model
     this.infobox = infobox;
     this.height = height;
     this.width = width;
@@ -28,8 +29,22 @@ Graph.prototype.selectNode = function(node) {
     }
 }
 
-Graph.prototype.update = function(dataset) {
-    console.log("new update")
+Graph.prototype.update = function() {
+    var me = this
+    var generateNode = function(id) {
+        var node = me.model.nodes[id];
+        node.children = [];
+        for (var child in node.children_id) {
+            node.children.push(generateNode(child));
+        }
+        return node;
+    }
+    this.model.node_tree = generateNode(0)
+    this.draw(this.model)
+}
+
+Graph.prototype.draw = function(dataset) {
+
     var pack = d3.layout.pack()
         .size([this.width - this.margin , this.height - this.margin])
         .value(function(d) { return d.size; })
@@ -37,7 +52,7 @@ Graph.prototype.update = function(dataset) {
 
     var format = d3.format(",d");
 
-    var nodes = this.container.datum(dataset.nodes).selectAll("g")
+    var nodes = this.container.datum(dataset.node_tree).selectAll("g")
         .data(pack.nodes, function(d) { return d.id;});
 
     var g_enter = nodes.enter().append("g")
@@ -65,11 +80,11 @@ Graph.prototype.update = function(dataset) {
     nodes.exit().remove("g");
 
     var getPos = function(id) {
-        return dataset.all_nodes[id].x + "," + dataset.all_nodes[id].y;
+        return dataset.nodes[id].x + "," + dataset.nodes[id].y;
     }
 
     var getPoint = function(id) {
-        return [dataset.all_nodes[id].x, dataset.all_nodes[id].y];
+        return [dataset.nodes[id].x, dataset.nodes[id].y];
     }
 
     var computeControlPoint = function(link) {
@@ -144,18 +159,8 @@ World = function() {
         return list;
     }
 
-    World.prototype.generateNode = function(id) {
-        var node = this.nodes[id];
-        node.children = [];
-        for (var child in node.children_id) {
-            node.children.push(this.generateNode(child));
-        }
-        return node;
-    }
-
     World.prototype.generateGraphDataset = function() {
-        return {"nodes": this.generateNode(0),
-                "links": this.hashToList(this.links),
-                "all_nodes": this.nodes}
+        return {"nodes": this.nodes,
+                "links": this.hashToList(this.links)}
     }
 }
